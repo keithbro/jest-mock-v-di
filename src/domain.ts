@@ -10,3 +10,10 @@ export interface IPerson {
 export function createPerson(data: ICreatePersonData): IPerson {
   return { name: data.name, id: Math.ceil(Math.random() * 9999999) } as const;
 }
+
+export class InvalidColourError extends Error {
+  constructor() {
+    super();
+    this.message = "Invalid Colour";
+  }
+}

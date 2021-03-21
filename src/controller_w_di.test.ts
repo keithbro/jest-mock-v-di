@@ -1,6 +1,6 @@
 import { getMockReq, getMockRes } from "@jest-mock/express";
 import { buildCreatePersonAction } from "./controller_w_di";
-import { ICreatePersonData, IPerson } from "./domain";
+import { ICreatePersonData, IPerson, InvalidColourError } from "./domain";
 import { inject } from "./test_utils";
 
 const buildAction = inject(buildCreatePersonAction, () => ({
@@ -11,18 +11,6 @@ const buildAction = inject(buildCreatePersonAction, () => ({
 
 describe("controller", () => {
   describe("createPerson", () => {
-    it("adds the type to the response payload", () => {
-      const req = getMockReq({ body: { name: "Rick" } });
-      const { res } = getMockRes();
-
-      buildAction().execute(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({
-        data: { id: 1, name: "Rick" },
-        type: "person",
-      });
-    });
-
     it("requires a name parameter", () => {
       const req = getMockReq({ body: {} });
       const { res } = getMockRes();
@@ -35,6 +23,24 @@ describe("controller", () => {
       expect(res.json).toHaveBeenCalledWith({
         error: "name is required",
       });
+    });
+
+    it("responds with 400 if the colour is invalid", () => {
+      const req = getMockReq({
+        body: { name: "Alice", favouriteColour: "rain" },
+      });
+      const { res } = getMockRes();
+
+      buildAction({
+        createPerson: jest
+          .fn()
+          .mockImplementation((data: ICreatePersonData) => {
+            throw new InvalidColourError();
+          }),
+      }).execute(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: "Invalid Colour" });
     });
   });
 });

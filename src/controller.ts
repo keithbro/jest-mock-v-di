@@ -1,22 +1,10 @@
 import { Request, Response } from "express";
-import { createPerson, IPerson } from "./domain";
-
-type ReqBody = {
-  name: string;
-};
-
-type ResBody =
-  | {
-      data: IPerson;
-      type: "person";
-    }
-  | {
-      error: string;
-    };
+import { CreatePersonReqBody, CreatePersonResBody } from "./api_contract";
+import { createPerson } from "./domain";
 
 export const createPersonAction = (
-  req: Request<{}, ResBody, ReqBody>,
-  res: Response<ResBody>
+  req: Request<{}, CreatePersonResBody, CreatePersonReqBody>,
+  res: Response<CreatePersonResBody>
 ) => {
   // Validate request payload
   if (!req.body.name) {
@@ -24,12 +12,16 @@ export const createPersonAction = (
     return;
   }
 
-  // Call inner layer, which may be non-deterministic
-  const person = createPerson({ name: req.body.name });
+  try {
+    // Call inner layer, which may be non-deterministic
+    const person = createPerson({ name: req.body.name });
 
-  // Build response payload
-  const personPayload = { data: person, type: "person" } as const;
+    // Build response payload
+    const personPayload = { data: person, type: "person" } as const;
 
-  // Respond
-  res.json(personPayload);
+    // Respond
+    res.json(personPayload);
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
 };
