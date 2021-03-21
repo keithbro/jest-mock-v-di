@@ -1,18 +1,16 @@
 import { getMockReq, getMockRes } from "@jest-mock/express";
-import { CreatePersonAction } from "./controller_w_di";
-import { CreatePersonData, Person } from "./domain";
+import { buildCreatePersonAction } from "./controller_w_di";
+import { ICreatePersonData, IPerson } from "./domain";
+import { buildActionWithDeps } from "./test_utils";
 
 const MockDeps = () => ({
   createPerson: jest
-    .fn<Person, CreatePersonData[]>()
+    .fn<IPerson, ICreatePersonData[]>()
     .mockImplementation((data) => ({ id: 1, name: data.name })),
 });
 
-const buildAction = () => {
-  const deps = MockDeps();
-  const action = CreatePersonAction(deps);
-  return { action, deps };
-};
+const buildAction = () =>
+  buildActionWithDeps(buildCreatePersonAction, MockDeps);
 
 describe("controller", () => {
   describe("createPerson", () => {

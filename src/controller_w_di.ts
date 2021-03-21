@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createPerson, Person } from "./domain";
+import { createPerson, IPerson } from "./domain";
 
 interface ReqBody {
   name: string;
@@ -7,14 +7,14 @@ interface ReqBody {
 
 type ResBody =
   | {
-      data: Person;
+      data: IPerson;
       type: "person";
     }
   | {
       error: string;
     };
 
-export const CreatePersonAction = (dependencies = { createPerson }) => (
+export const buildCreatePersonAction = (dependencies = { createPerson }) => (
   req: Request<{}, ResBody, ReqBody>,
   res: Response<ResBody>
 ) => {

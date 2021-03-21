@@ -1,10 +1,10 @@
 import { getMockReq, getMockRes } from "@jest-mock/express";
 import { createPersonAction as action } from "./controller";
-import { CreatePersonData, Person, createPerson } from "./domain";
+import { ICreatePersonData, IPerson, createPerson } from "./domain";
 
 jest.mock("./domain", () => ({
   createPerson: jest
-    .fn<Person, CreatePersonData[]>()
+    .fn<IPerson, ICreatePersonData[]>()
     .mockImplementation((data) => ({ id: 1, name: data.name })),
 }));
 
