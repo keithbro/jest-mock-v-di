@@ -1,5 +1,5 @@
 import { getMockReq, getMockRes } from "@jest-mock/express";
-import { createPersonAction as action } from "./controller";
+import { createPersonAction } from "./controller";
 import { ICreatePersonData, IPerson, createPerson } from "./domain";
 
 jest.mock("./domain", () => ({
@@ -16,7 +16,7 @@ describe("controller", () => {
       const req = getMockReq({ body: { name: "Rick" } });
       const { res } = getMockRes();
 
-      action(req, res);
+      createPersonAction(req, res);
 
       expect(res.json).toHaveBeenCalledWith({
         data: { id: 1, name: "Rick" },
@@ -28,7 +28,7 @@ describe("controller", () => {
       const req = getMockReq({ body: {} });
       const { res } = getMockRes();
 
-      action(req, res);
+      createPersonAction(req, res);
 
       expect(createPerson).not.toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(400);

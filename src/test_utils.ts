@@ -1,7 +1,7 @@
-export const buildActionWithDeps = <Deps, Action>(
-  buildAction: (deps: Deps) => Action,
-  buildMockDeps: () => Deps
-) => {
-  const deps = buildMockDeps();
-  return { action: buildAction(deps), deps };
+export const inject = <DependenciesFactory, FunctionFactory>(
+  buildFunction: (dependencies: DependenciesFactory) => FunctionFactory,
+  buildDependencies: () => DependenciesFactory
+) => () => {
+  const dependencies = buildDependencies();
+  return { execute: buildFunction(dependencies), dependencies };
 };

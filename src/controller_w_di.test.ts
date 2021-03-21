@@ -1,16 +1,13 @@
 import { getMockReq, getMockRes } from "@jest-mock/express";
 import { buildCreatePersonAction } from "./controller_w_di";
 import { ICreatePersonData, IPerson } from "./domain";
-import { buildActionWithDeps } from "./test_utils";
+import { inject } from "./test_utils";
 
-const MockDeps = () => ({
+const buildAction = inject(buildCreatePersonAction, () => ({
   createPerson: jest
     .fn<IPerson, ICreatePersonData[]>()
     .mockImplementation((data) => ({ id: 1, name: data.name })),
-});
-
-const buildAction = () =>
-  buildActionWithDeps(buildCreatePersonAction, MockDeps);
+}));
 
 describe("controller", () => {
   describe("createPerson", () => {
@@ -18,7 +15,7 @@ describe("controller", () => {
       const req = getMockReq({ body: { name: "Rick" } });
       const { res } = getMockRes();
 
-      buildAction().action(req, res);
+      buildAction().execute(req, res);
 
       expect(res.json).toHaveBeenCalledWith({
         data: { id: 1, name: "Rick" },
@@ -30,10 +27,10 @@ describe("controller", () => {
       const req = getMockReq({ body: {} });
       const { res } = getMockRes();
 
-      const { deps, action } = buildAction();
-      action(req, res);
+      const { dependencies, execute } = buildAction();
+      execute(req, res);
 
-      expect(deps.createPerson).not.toHaveBeenCalled();
+      expect(dependencies.createPerson).not.toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         error: "name is required",

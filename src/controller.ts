@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { createPerson, IPerson } from "./domain";
 
-interface ReqBody {
+type ReqBody = {
   name: string;
-}
+};
 
 type ResBody =
   | {
