@@ -23,7 +23,7 @@ describe("controller", () => {
       });
 
       const req = getMockReq({
-        body: { name: "Rick", favouriteColour: "rain" },
+        body: { name: "Alan", favouriteColour: "rain" },
       });
       const { res } = getMockRes();
 
