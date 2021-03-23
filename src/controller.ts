@@ -14,7 +14,10 @@ export const createPersonAction = (
 
   try {
     // Call inner layer, which may be non-deterministic
-    const person = createPerson({ name: req.body.name });
+    const person = createPerson({
+      name: req.body.name,
+      favouriteColour: req.body.favouriteColour,
+    });
 
     // Build response payload
     const personPayload = { data: person, type: "person" } as const;

@@ -11,23 +11,9 @@ const buildAction = inject(buildCreatePersonAction, () => ({
 
 describe("controller", () => {
   describe("createPerson", () => {
-    it("requires a name parameter", () => {
-      const req = getMockReq({ body: {} });
-      const { res } = getMockRes();
-
-      const { dependencies, execute } = buildAction();
-      execute(req, res);
-
-      expect(dependencies.createPerson).not.toHaveBeenCalled();
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "name is required",
-      });
-    });
-
     it("responds with 400 if the colour is invalid", () => {
       const req = getMockReq({
-        body: { name: "Alice", favouriteColour: "rain" },
+        body: { name: "Alan", favouriteColour: "rain" },
       });
       const { res } = getMockRes();
 
@@ -41,6 +27,18 @@ describe("controller", () => {
 
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({ error: "Invalid Colour" });
+    });
+
+    it("adds the type to the response payload", () => {
+      const req = getMockReq({ body: { name: "Alice" } });
+      const { res } = getMockRes();
+
+      buildAction().execute(req, res);
+
+      expect(res.json).toHaveBeenCalledWith({
+        data: { id: 1, name: "Alice" },
+        type: "person",
+      });
     });
   });
 });

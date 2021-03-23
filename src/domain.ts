@@ -1,5 +1,6 @@
 export interface ICreatePersonData {
   name: string;
+  favouriteColour: string;
 }
 
 export interface IPerson {
