@@ -17,14 +17,20 @@ describe("controller", () => {
       });
       const { res } = getMockRes();
 
-      buildAction({
+      const { dependencies, execute } = buildAction({
         createPerson: jest
           .fn()
           .mockImplementation((data: ICreatePersonData) => {
             throw new InvalidColourError();
           }),
-      }).execute(req, res);
+      });
 
+      execute(req, res);
+
+      expect(dependencies.createPerson).toHaveBeenCalledWith({
+        name: "Alan",
+        favouriteColour: "rain",
+      });
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({ error: "Invalid Colour" });
     });

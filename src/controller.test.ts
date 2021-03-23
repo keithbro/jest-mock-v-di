@@ -30,7 +30,7 @@ describe("controller", () => {
       createPersonAction(req, res);
 
       expect(createPerson).toHaveBeenCalledWith({
-        name: "Rick",
+        name: "Alan",
         favouriteColour: "rain",
       });
       expect(res.status).toHaveBeenCalledWith(400);
