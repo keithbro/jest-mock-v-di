@@ -1,27 +1,21 @@
 import { getMockReq, getMockRes } from "@jest-mock/express";
 import { createPersonAction } from "./controller";
-import {
-  ICreatePersonData,
-  IPerson,
-  createPerson,
-  InvalidColourError,
-} from "./domain";
-
-jest.mock("./domain", () => ({
-  createPerson: jest
-    .fn<IPerson, ICreatePersonData[]>()
-    .mockImplementation((data) => ({ id: 1, name: data.name })),
-}));
+import * as Domain from "./domain";
 
 describe("controller", () => {
-  beforeEach(() => jest.clearAllMocks());
-
   describe("createPerson", () => {
-    it("responds with 400 if the colour is invalid", () => {
-      (createPerson as jest.Mock).mockImplementationOnce(function () {
-        throw new Error("Invalid Colour");
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.spyOn(Domain, "createPerson").mockImplementation((data) => {
+        return { id: 1, name: data.name };
       });
+    });
 
+    it("responds with 400 if the colour is invalid", async () => {
+      jest.spyOn(Domain, "createPerson").mockImplementationOnce(() => {
+        throw new Domain.InvalidColourError();
+      });
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       const req = getMockReq({
         body: { name: "Alan", favouriteColour: "rain" },
       });
@@ -29,7 +23,7 @@ describe("controller", () => {
 
       createPersonAction(req, res);
 
-      expect(createPerson).toHaveBeenCalledWith({
+      expect(Domain.createPerson).toHaveBeenCalledWith({
         name: "Alan",
         favouriteColour: "rain",
       });
@@ -37,7 +31,7 @@ describe("controller", () => {
       expect(res.json).toHaveBeenCalledWith({ error: "Invalid Colour" });
     });
 
-    it("adds the type to the response payload", () => {
+    it("adds the type to the response payload", async () => {
       const req = getMockReq({ body: { name: "Alice" } });
       const { res } = getMockRes();
 
